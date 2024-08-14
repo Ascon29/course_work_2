@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 
 import requests
-from src.vacancy import Vacancy
-from config import DATA_DIR
 
 
 class Parser(ABC):
@@ -27,7 +25,7 @@ class HeadHunterAPI(Parser):
         self.__headers = {"User-Agent": "HH-User-Agent"}
         self.params = {"text": "", "page": 0, "per_page": 100}
         self.vacancies = []
-        # self.vacancies_sort = []
+        self.validate_vacancies = []
 
     def load_vacancies(self, keyword):
         self.params["text"] = keyword
@@ -41,16 +39,21 @@ class HeadHunterAPI(Parser):
                 self.vacancies.extend(vacancies)
                 self.params["page"] += 1
 
-        # for vacancy in self.vacancies:
-        #     name = vacancy['name'] if vacancy['name'] else 'Название не указано'
-        #     link = vacancy['alternate_url'] if vacancy['alternate_url'] else 'Ссылка отсутствует'
-        #     salary = vacancy['salary']['from'] if vacancy['salary'] else 'Зарплата не указана'
-        #     description = vacancy["snippet"]["responsibility"] if vacancy['snippet'] else 'Описание отсутствует'
-        #     area = vacancy["area"]["name"] if vacancy['area'] else 'Город не указан'
-        #     self.vacancies_sort.append(Vacancy(name=name, link=link, salary=salary, description=description, area=area))
+        for vacancy in self.vacancies:
+            if vacancy['name'] is None:
+                vacancy['name'] = 'Название не указано'
+            if vacancy['alternate_url'] is None:
+                vacancy['alternate_url'] = 'Ссылка отсутствует'
+            if vacancy['salary'] is None:
+                vacancy['salary'] = 'Зарплата не указана'
+            if vacancy['snippet'] is None:
+                vacancy["snippet"]["responsibility"] = 'Описание отсутствует'
+            if vacancy["area"] is None:
+                vacancy["area"]["name"] = 'Город не указан'
+            self.validate_vacancies.append(vacancy)
 
     def get_vacancies(self):
-        return self.vacancies
+        return self.validate_vacancies
 
 
 if __name__ == "__main__":

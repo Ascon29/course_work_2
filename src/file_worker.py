@@ -1,7 +1,6 @@
 import json
 import os
 from abc import ABC, abstractmethod
-from src.vacancy import Vacancy
 from config import DATA_DIR
 
 
@@ -12,7 +11,7 @@ class Worker(ABC):
         pass
 
     @abstractmethod
-    def write_file(self, vacancies):
+    def write_file(self, ser_vacs):
         pass
 
     @abstractmethod
@@ -28,7 +27,6 @@ class JSONSaver(Worker):
 
     def __init__(self, filename='vacancies.json'):
         self.__filename = os.path.join(DATA_DIR, filename)
-        self.vacancy_list = []
 
     @property
     def filename(self):
@@ -41,11 +39,31 @@ class JSONSaver(Worker):
         else:
             return []
 
-    def write_file(self, vacancies):
+    def write_file(self, ser_vacs):
         data = self.read_file()
-        data.extend(vacancies)
+        vacancy_list = []
+        for i in ser_vacs:
+            if i in data:
+                continue
+            else:
+                vacancy_list.append(i)
         with open(self.filename, 'w', encoding="UTF-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+            json.dump(vacancy_list, f, ensure_ascii=False, indent=4)
+
+    @staticmethod
+    def serialize(vacancies):
+        vac_list = []
+        for i in vacancies:
+            vac_list.append(
+                {
+                    "name": i['name'],
+                    "link": i["alternate_url"],
+                    "salary": i['salary'],
+                    'snippet': i['snippet'],
+                    "area": i['area']
+                }
+            )
+        return vac_list
 
     def add_vacancy(self, vacancy):
         pass
