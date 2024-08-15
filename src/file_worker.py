@@ -5,6 +5,9 @@ from config import DATA_DIR
 
 
 class Worker(ABC):
+    """
+    Абстрактный родительский класс для чтения и записи файла
+    """
 
     @abstractmethod
     def read_file(self):
@@ -24,6 +27,10 @@ class Worker(ABC):
 
 
 class JSONSaver(Worker):
+    """
+    Класс для чтения из файла, записи в файл списка вакансий
+    Класс Worker является родительским классом
+    """
 
     def __init__(self, filename='vacancies.json'):
         self.__filename = os.path.join(DATA_DIR, filename)
@@ -33,6 +40,10 @@ class JSONSaver(Worker):
         return self.__filename
 
     def read_file(self):
+        """
+        Функция для чтения файла. Проверяет, есть ли файл. И, если есть, возвращает его содержимое.
+        Иначе создает файл с указанным именем и возвращает пустой список.
+        """
         if os.path.exists(self.filename):
             with open(self.filename, 'r', encoding="UTF-8") as f:
                 return json.load(f)
@@ -40,18 +51,23 @@ class JSONSaver(Worker):
             return []
 
     def write_file(self, ser_vacs):
+        """
+        Функция для записи списка вакансий в файл. Принимает список вакансий.
+        """
         data = self.read_file()
-        vacancy_list = []
         for i in ser_vacs:
             if i in data:
                 continue
             else:
-                vacancy_list.append(i)
+                data.append(i)
         with open(self.filename, 'w', encoding="UTF-8") as f:
-            json.dump(vacancy_list, f, ensure_ascii=False, indent=4)
+            json.dump(data, f, ensure_ascii=False, indent=4)
 
     @staticmethod
     def serialize(vacancies):
+        """
+        Статический метод для сериализации списка вакансий в нужный формат
+        """
         vac_list = []
         for i in vacancies:
             vac_list.append(
@@ -59,8 +75,8 @@ class JSONSaver(Worker):
                     "name": i['name'],
                     "link": i["alternate_url"],
                     "salary": i['salary'],
-                    'snippet': i['snippet'],
-                    "area": i['area']
+                    'description': i['snippet']['responsibility'],
+                    "area": i['area']['name']
                 }
             )
         return vac_list

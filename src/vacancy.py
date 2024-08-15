@@ -1,7 +1,10 @@
 
 
 class Vacancy:
-    __slots__ = ('id', 'name', 'link', 'salary', 'description', 'area')
+    """
+    Класс для описания вакансии
+    """
+    __slots__ = ('name', 'link', 'salary', 'description', 'area')
 
     def __init__(self, name, link, salary, description, area):
         self.name = name

@@ -4,6 +4,9 @@ import requests
 
 
 class Parser(ABC):
+    """
+    Абстрактный родительский класс для подключения по API
+    """
 
     @abstractmethod
     def load_vacancies(self, keyword):
@@ -28,6 +31,10 @@ class HeadHunterAPI(Parser):
         self.validate_vacancies = []
 
     def load_vacancies(self, keyword):
+        """
+        Функция для получения вакансий по заданному слову.
+        Приводит полученный список к нужному виду.
+        """
         self.params["text"] = keyword
         while self.params.get("page") != 2:
             try:
@@ -46,13 +53,18 @@ class HeadHunterAPI(Parser):
                 vacancy['alternate_url'] = 'Ссылка отсутствует'
             if vacancy['salary'] is None:
                 vacancy['salary'] = 'Зарплата не указана'
-            if vacancy['snippet'] is None:
+            else:
+                vacancy['salary'] = vacancy['salary']['from']
+            if vacancy['snippet'] is None or vacancy['snippet']['responsibility'] is None:
                 vacancy["snippet"]["responsibility"] = 'Описание отсутствует'
-            if vacancy["area"] is None:
+            if vacancy["area"] is None or vacancy['area']['name'] is None:
                 vacancy["area"]["name"] = 'Город не указан'
             self.validate_vacancies.append(vacancy)
 
     def get_vacancies(self):
+        """
+        Возвращает список вакансий
+        """
         return self.validate_vacancies
 
 
