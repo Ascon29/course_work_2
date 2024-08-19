@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 import requests
 
@@ -30,7 +31,7 @@ class HeadHunterAPI(Parser):
         self.vacancies = []
         self.validate_vacancies = []
 
-    def load_vacancies(self, keyword):
+    def load_vacancies(self, keyword: str):
         """
         Функция для получения вакансий по заданному слову.
         Приводит полученный список к нужному виду.
@@ -40,28 +41,28 @@ class HeadHunterAPI(Parser):
             try:
                 response = requests.get(self.__url, headers=self.__headers, params=self.params)
             except Exception as e:
-                print(f'Произошла ошибка {e}')
+                print(f"Произошла ошибка {e}")
             else:
                 vacancies = response.json()["items"]
                 self.vacancies.extend(vacancies)
                 self.params["page"] += 1
 
         for vacancy in self.vacancies:
-            if vacancy['name'] is None:
-                vacancy['name'] = 'Название не указано'
-            if vacancy['alternate_url'] is None:
-                vacancy['alternate_url'] = 'Ссылка отсутствует'
-            if vacancy['salary'] is None:
-                vacancy['salary'] = 'Зарплата не указана'
+            if vacancy["name"] is None:
+                vacancy["name"] = "Название не указано"
+            if vacancy["alternate_url"] is None:
+                vacancy["alternate_url"] = "Ссылка отсутствует"
+            if vacancy["salary"] is None or vacancy["salary"]["from"] is None:
+                vacancy["salary"] = 0
             else:
-                vacancy['salary'] = vacancy['salary']['from']
-            if vacancy['snippet'] is None or vacancy['snippet']['responsibility'] is None:
-                vacancy["snippet"]["responsibility"] = 'Описание отсутствует'
-            if vacancy["area"] is None or vacancy['area']['name'] is None:
-                vacancy["area"]["name"] = 'Город не указан'
+                vacancy["salary"] = vacancy["salary"]["from"]
+            if vacancy["snippet"] is None or vacancy["snippet"]["responsibility"] is None:
+                vacancy["snippet"]["responsibility"] = "Описание отсутствует"
+            if vacancy["area"] is None or vacancy["area"]["name"] is None:
+                vacancy["area"]["name"] = "Город не указан"
             self.validate_vacancies.append(vacancy)
 
-    def get_vacancies(self):
+    def get_vacancies(self) -> List:
         """
         Возвращает список вакансий
         """
