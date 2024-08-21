@@ -15,13 +15,8 @@ def user_interaction():
 
     # Сохранение информации о вакансиях в файл
     json_saver = JSONSaver()
-    serialized_json_vacancies = json_saver.serialize_for_json(hh_vacancies)
-    json_saver.write_file(serialized_json_vacancies)
-    print(f"Вакансии в количестве {len(serialized_json_vacancies)} успешно загружены и записаны в файл")
-
-    # Чтение информации о вакансиях из файла
-    vacs_list_from_json = json_saver.read_file()
-    vacs_list_for_user = json_saver.serialize_for_user(vacs_list_from_json)
+    json_saver.write_file(hh_vacancies)
+    print(f"Вакансии в количестве {len(hh_vacancies)} успешно загружены и записаны в файл")
 
     # Обращение к пользователю. Сбор информации
     filter_word = input("Введите ключевое слово для фильтрации вакансий по описанию: ")
@@ -33,7 +28,7 @@ def user_interaction():
     # Создание экземпляра класса фильтрации и сортировки вакансий
     filtered_obj = FilterSortVacancies(filter_word, filter_area, filter_salary, top_n)
 
-    filtered_by_description = filtered_obj.filter_by_description(vacs_list_for_user)
+    filtered_by_description = filtered_obj.filter_by_description(hh_vacancies)
     print(f"Отфильтровано {len(filtered_by_description)} вакансий по описанию")
     filtered_by_area = filtered_obj.filter_by_area(filtered_by_description)
     print(f"Отфильтровано {len(filtered_by_area)} вакансий по местоположению")
@@ -44,9 +39,11 @@ def user_interaction():
 
     top_vacancies = filtered_obj.get_top_vacancies(sorted_by_salary)
 
-    print(f"Топ {top_n} вакансий:\n-{top_vacancies}\n")
+    print(f"Топ {top_n} вакансий:\n{top_vacancies}\n")
 
-    json_saver.del_vacancy()
+    user_input = input("Очистить файл? (да / нет): ").lower()
+    if user_input == "да":
+        json_saver.del_vacancy()
 
 
 if __name__ == "__main__":

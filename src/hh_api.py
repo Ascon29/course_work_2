@@ -3,6 +3,8 @@ from typing import List
 
 import requests
 
+from src.vacancy import Vacancy
+
 
 class Parser(ABC):
     """
@@ -48,19 +50,29 @@ class HeadHunterAPI(Parser):
                 self.params["page"] += 1
 
         for vacancy in self.vacancies:
-            if vacancy["name"] is None:
-                vacancy["name"] = "Название не указано"
-            if vacancy["alternate_url"] is None:
-                vacancy["alternate_url"] = "Ссылка отсутствует"
-            if vacancy["salary"] is None or vacancy["salary"]["from"] is None:
-                vacancy["salary"] = 0
+            if vacancy["name"]:
+                name = vacancy["name"]
             else:
-                vacancy["salary"] = vacancy["salary"]["from"]
+                name = "Название не указано"
+            if vacancy["alternate_url"]:
+                link = vacancy["alternate_url"]
+            else:
+                link = "Ссылка отсутствует"
+            if vacancy["salary"] is None or vacancy["salary"]["from"] is None:
+                salary = 0
+            else:
+                salary = vacancy["salary"]["from"]
             if vacancy["snippet"] is None or vacancy["snippet"]["responsibility"] is None:
-                vacancy["snippet"]["responsibility"] = "Описание отсутствует"
+                description = "Описание отсутствует"
+            else:
+                description = vacancy["snippet"]["responsibility"]
             if vacancy["area"] is None or vacancy["area"]["name"] is None:
-                vacancy["area"]["name"] = "Город не указан"
-            self.validate_vacancies.append(vacancy)
+                area = "Город не указан"
+            else:
+                area = vacancy["area"]["name"]
+            self.validate_vacancies.append(
+                Vacancy(name=name, link=link, description=description, salary=salary, area=area)
+            )
 
     def get_vacancies(self) -> List:
         """
