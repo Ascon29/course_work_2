@@ -41,7 +41,7 @@ def user_interaction():
 
     print(f"Топ {top_n} вакансий:\n{top_vacancies}\n")
 
-    user_input = input("Очистить файл? (да / нет): ").lower()
+    user_input = input("Очистить файл с вакансиями? (да / нет): ").lower()
     if user_input == "да":
         json_saver.del_vacancy()
 
