@@ -25,7 +25,7 @@ class Worker(ABC):
         pass
 
     @abstractmethod
-    def del_vacancy(self, vacancy):
+    def del_vacancy(self):
         pass
 
 
@@ -34,8 +34,9 @@ class JSONSaver(Worker):
     Класс для чтения из файла, записи в файл списка вакансий
     Класс Worker является родительским классом
     """
+    filename_value = 'vacancies.json'
 
-    def __init__(self, filename="vacancies.json"):
+    def __init__(self, filename=filename_value):
         self.__filename = os.path.join(DATA_DIR, filename)
 
     @property
@@ -102,5 +103,6 @@ class JSONSaver(Worker):
     def add_vacancy(self, vacancy):
         pass
 
-    def del_vacancy(self, vacancy):
-        pass
+    def del_vacancy(self):
+        with open(self.filename, "w") as f:
+            json.dump([], f)

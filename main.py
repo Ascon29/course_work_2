@@ -46,6 +46,8 @@ def user_interaction():
 
     print(f"Топ {top_n} вакансий:\n-{top_vacancies}\n")
 
+    json_saver.del_vacancy()
+
 
 if __name__ == "__main__":
     user_interaction()
