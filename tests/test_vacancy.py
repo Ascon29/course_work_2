@@ -1,4 +1,8 @@
+from src.vacancy import Vacancy
+
+
 def test_vacancy_init(vacancy_1):
+    vacancy_1 = Vacancy(vacancy_1)
     assert vacancy_1.name == "Junior Python"
     assert vacancy_1.link == "https://hh.ru/vacancy/105338726"
     assert vacancy_1.salary == 0
@@ -12,4 +16,6 @@ def test_vacancy_init(vacancy_1):
 
 
 def test_comparison(vacancy_1, vacancy_2):
+    vacancy_1 = Vacancy(vacancy_1)
+    vacancy_2 = Vacancy(vacancy_2)
     assert vacancy_1 < vacancy_2

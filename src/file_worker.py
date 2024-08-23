@@ -52,7 +52,8 @@ class JSONSaver(Worker):
         if os.path.exists(self.filename):
             with open(self.filename, "r", encoding="UTF-8") as f:
                 vacs = json.load(f)
-            self.vacs_list = [Vacancy(**i) for i in vacs]
+            self.vacs_list = [Vacancy(i) for i in vacs]
+        return self.vacs_list
 
     def write_file(self, vacs_obj: List):
         """
@@ -61,7 +62,13 @@ class JSONSaver(Worker):
         vacs_list = []
         for i in vacs_obj:
             vacs_list.append(
-                {"name": i.name, "link": i.link, "salary": i.salary, "description": i.description, "area": i.area}
+                {
+                    "name": Vacancy(i).name,
+                    "alternate_url": Vacancy(i).link,
+                    "salary": {"from": Vacancy(i).salary},
+                    "snippet": {"responsibility": Vacancy(i).description},
+                    "area": {"name": Vacancy(i).area},
+                }
             )
         with open(self.filename, "w", encoding="utf-8") as f:
             json.dump(vacs_list, f, ensure_ascii=False, indent=4)

@@ -57,41 +57,30 @@ def hh_vacs_list():
 
 @pytest.fixture
 def vacancy_1():
-    return Vacancy(
-        name="Junior Python",
-        link="https://hh.ru/vacancy/105338726",
-        salary=0,
-        description="Создание скриптов",
-        area="Могилев",
-    )
+    return {
+        "name": "Junior Python",
+        "alternate_url": "https://hh.ru/vacancy/105338726",
+        "salary": {"from": 0},
+        "snippet": {"responsibility": "Создание скриптов"},
+        "area": {
+            "name": "Могилев",
+        },
+    }
 
 
 @pytest.fixture
 def vacancy_2():
-    return Vacancy(
-        name="Senior Python",
-        link="https://hh.ru/vacancy/105338726",
-        salary=10000,
-        description="Создание скриптов",
-        area="Могилев",
-    )
+    return {
+        "name": "Junior Python",
+        "alternate_url": "https://hh.ru/vacancy/105338726",
+        "salary": {"from": 10000},
+        "snippet": {"responsibility": "Приглашаем Инженера"},
+        "area": {
+            "name": "Москва",
+        },
+    }
 
 
 @pytest.fixture
-def vac_list_1():
-    return [
-        Vacancy(
-            name="Junior Python",
-            link="https://hh.ru/vacancy/105338726",
-            salary=0,
-            description="Создание скриптов",
-            area="Могилев",
-        ),
-        Vacancy(
-            name="Senior Python",
-            link="https://hh.ru/vacancy/105338726",
-            salary=10000,
-            description="Приглашаем Инженера",
-            area="Москва",
-        ),
-    ]
+def vac_list_1(vacancy_1, vacancy_2):
+    return [Vacancy(vacancy_1), Vacancy(vacancy_2)]

@@ -25,10 +25,11 @@ def user_interaction():
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
     print("")
 
+    read_vacs_from_json = json_saver.read_file()
     # Создание экземпляра класса фильтрации и сортировки вакансий
     filtered_obj = FilterSortVacancies(filter_word, filter_area, filter_salary, top_n)
 
-    filtered_by_description = filtered_obj.filter_by_description(hh_vacancies)
+    filtered_by_description = filtered_obj.filter_by_description(read_vacs_from_json)
     print(f"Отфильтровано {len(filtered_by_description)} вакансий по описанию")
     filtered_by_area = filtered_obj.filter_by_area(filtered_by_description)
     print(f"Отфильтровано {len(filtered_by_area)} вакансий по местоположению")
