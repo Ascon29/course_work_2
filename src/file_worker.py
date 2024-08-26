@@ -25,7 +25,7 @@ class Worker(ABC):
         pass
 
     @abstractmethod
-    def del_vacancy(self, vacancy):
+    def del_vacancy(self):
         pass
 
 
@@ -35,72 +35,47 @@ class JSONSaver(Worker):
     Класс Worker является родительским классом
     """
 
-    def __init__(self, filename="vacancies.json"):
+    filename_value = "vacancies.json"
+
+    def __init__(self, filename=filename_value):
+        self.vacs_list = []
         self.__filename = os.path.join(DATA_DIR, filename)
 
     @property
     def filename(self):
         return self.__filename
 
-    def read_file(self) -> List:
+    def read_file(self):
         """
-        Функция для чтения файла. Проверяет, есть ли файл. И, если есть, возвращает его содержимое.
-        Иначе создает файл с указанным именем и возвращает пустой список.
+        Функция для чтения файла. Проверяет, есть ли файл. И, если есть, сохраняет список объектов
         """
         if os.path.exists(self.filename):
             with open(self.filename, "r", encoding="UTF-8") as f:
-                return json.load(f)
-        else:
-            return []
+                vacs = json.load(f)
+            self.vacs_list = [Vacancy(i) for i in vacs]
+        return self.vacs_list
 
-    def write_file(self, ser_vacs: List):
+    def write_file(self, vacs_obj: List):
         """
-        Функция для записи списка вакансий в файл. Принимает список вакансий.
+        Функция для записи списка вакансий в файл. Принимает список объектов класса Vacancy.
         """
-        data = self.read_file()
-        for i in ser_vacs:
-            if i in data:
-                continue
-            else:
-                data.append(i)
-        with open(self.filename, "w", encoding="UTF-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-
-    @staticmethod
-    def serialize_for_json(vacancies: List) -> List:
-        """
-        Статический метод для сериализации списка вакансий в нужный формат для записи в json файл
-        """
-        vac_list = []
-        for i in vacancies:
-            vac_list.append(
+        vacs_list = []
+        for i in vacs_obj:
+            vacs_list.append(
                 {
-                    "name": i["name"],
-                    "link": i["alternate_url"],
-                    "salary": i["salary"],
-                    "description": i["snippet"]["responsibility"],
-                    "area": i["area"]["name"],
+                    "name": Vacancy(i).name,
+                    "alternate_url": Vacancy(i).link,
+                    "salary": {"from": Vacancy(i).salary},
+                    "snippet": {"responsibility": Vacancy(i).description},
+                    "area": {"name": Vacancy(i).area},
                 }
             )
-        return vac_list
-
-    @staticmethod
-    def serialize_for_user(vacancies: List) -> List:
-        """
-        Статический метод для сериализации списка вакансий в нужный формат для вывода пользователю
-        """
-        vac_list = []
-        for vac in vacancies:
-            name = vac["name"]
-            link = vac["link"]
-            salary = vac["salary"]
-            description = vac["description"]
-            area = vac["area"]
-            vac_list.append(Vacancy(name, link, salary, description, area))
-        return vac_list
+        with open(self.filename, "w", encoding="utf-8") as f:
+            json.dump(vacs_list, f, ensure_ascii=False, indent=4)
 
     def add_vacancy(self, vacancy):
         pass
 
-    def del_vacancy(self, vacancy):
-        pass
+    def del_vacancy(self):
+        with open(self.filename, "w") as f:
+            pass
